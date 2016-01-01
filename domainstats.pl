@@ -58,7 +58,7 @@ if ( $help ) {
     &_gen_hosts_file();
 } elsif ( $jsons ) {
     print "\n";
-    &_make_json_data();
+    &supressERR( \&_make_json_data );
 } else {
     print "\n\thWhhut?! try -help ;p\n\n";
 }
