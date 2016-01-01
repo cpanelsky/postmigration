@@ -1,1 +1,17 @@
-# postmigration
+#USAGE : 
+perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/PostMig/master/domainstats.pl) -help
+
+   Options:
+     -help   -> This!
+     -ipdns  -> Check http status, IP's, DNS IP's
+     -hosts  -> Show suggested /etc/hosts file
+     -mail   -> Check for email accounts
+     -all    -> All the things!
+
+
+#To Do:
+- Polish DNS checks for local/remote targets
+- return data checks for common errors
+- hashed categories of return data to print in categorized blocks
+- Add more/adjust json data return if/as necessary
+- Add More to To Do list.
