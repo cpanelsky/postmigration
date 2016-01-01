@@ -40,6 +40,7 @@ if ( $help ) {
      -ipdns  -> Check http status, IP's, DNS IP's
      -hosts  -> Show suggested /etc/hosts file
      -mail   -> Check for email accounts
+     -json   -> Print http/DNS data in JSON
      -all    -> All the things!\n\n";
 } elsif ( $mail ) {
     print "\n\n";
