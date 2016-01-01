@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# cpanel                                          Copyright(c) 2016 cPanel, Inc.
+# cpanel				           Copyright(c) 2016 cPanel, Inc.
 #                                                           All rights Reserved.
 # copyright@cpanel.net                                         http://cpanel.net
 # This code is subject to the cPanel license. Unauthorized copying is prohibited
@@ -27,6 +27,18 @@ our @links    = read_file( $fileName );
 our $linkRef  = \@links;
 our $VERSION  = 0.02;
 
+
+#this silences stderr
+sub supressERR($) {
+    open my $saveout, ">&STDERR";
+    open STDERR, '>', File::Spec->devnull();
+    my $func = $_[0];
+    $func->();
+    open STDERR, ">&", $saveout;
+}
+
+
+
 GetOptions( 'mail'  => \$mail,
             'ipdns' => \$ipdns,
             'all'   => \$all,
@@ -39,7 +51,7 @@ if ( $help ) {
      -help   -> This!
      -ipdns  -> Check http status, IP's, DNS IP's
      -hosts  -> Show suggested /etc/hosts file
-     -mail   -> Check for email accounts
+     -mail   -> Print http
      -json   -> Print http/DNS data in JSON
      -all    -> All the things!\n\n";
 } elsif ( $mail ) {
@@ -58,7 +70,7 @@ if ( $help ) {
     &_gen_hosts_file();
 } elsif ( $jsons ) {
     print "\n";
-    supressERR( \&_make_json_data );
+    &supressERR( \&_make_json_data );
 } else {
     print "\n\thWhhut?! try -help ;p\n\n";
 }
@@ -81,14 +93,6 @@ sub get_data {
     }
 }
 
-#this silences stderr
-sub supressERR($) {
-    open my $saveout, ">&STDERR";
-    open STDERR, '>', File::Spec->devnull();
-    my $func = $_[0];
-    $func->();
-    open STDERR, ">&", $saveout;
-}
 
 #this is a subroutine to check the http status code for domains
 sub _get_http_status {
@@ -266,6 +270,8 @@ sub _make_json_data {
             my $body2 = $res2->decoded_content;
             my $code2 = $res2->code();
             my $head3 = $res2->headers()->as_string;
+	    my $googleDNS2    = "NULL";
+            my $localhostDNS2 = "NULL";
             print $res2->header( "content-type\r\n\r\n" );
             if ( $head3 =~ /Client-Peer:[\s](.*):([0-9].*)/ ) {
                 $reqIP = "$1:$2";
@@ -280,10 +286,10 @@ sub _make_json_data {
            my @googleArgs2 = ( "\@$googleH", "$domain", "A", "+short", "+tries=1" );
            my @googleDNSA2 = capture( $cmd2, @googleArgs2 );
      	   my $googleDNSR2    = \@googleDNSA2;
-     	   my $googleDNS2    = $googleDNSR2->[0];
+     	   $googleDNS2    = $googleDNSR2->[0];
      	   my @localhostDNSA2 = capture( $cmd2, @localArgs2 );
      	   my $localhostDNSR2 = \@localhostDNSA2;
-     	   my $localhostDNS2  = $localhostDNSR2->[0];
+     	   $localhostDNS2  = $localhostDNSR2->[0];
      	   chomp( $googleDNS2, $localhostDNS2 );
             if ( ( $localhostDNS2 ) && ( $localhostDNS2 ne $googleDNS2 ) ) {
             $googleDNS2 = "mismatch"
@@ -293,7 +299,7 @@ sub _make_json_data {
 
                 my $class = shift;
                 my $self = { 
-			                 Domain     => shift,
+			     Domain     => shift,
                              IP         => shift,
                              httpStatus => shift,
                              LocalDNS   => shift,
@@ -308,9 +314,9 @@ sub _make_json_data {
             use JSON;
             my $JSON = JSON->new->utf8;
             $JSON->convert_blessed( 1 );
-            my $e = jsons DomainStatus( $domain, $reqIP, $status, $localhostDNS2, $googleDNS2);
+            my $e = jsons DomainStatus( "$domain", "$reqIP", "$status", "$localhostDNS2", "$googleDNS2");
             my $json = $JSON->encode( $e );
-            print "$json";
+            print "$json\n";
         }
     } 
   } print "\n";
