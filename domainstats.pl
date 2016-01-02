@@ -46,6 +46,12 @@ GetOptions( 'mail'  => \$mail,
             'local' => \$localcheck,
             'help!' => \$help );
 
+if ($localcheck) {
+ $REMOTEDNSHOST = "localhost";
+} else {
+ $REMOTEDNSHOST = "8.8.8.8";
+}
+
 if ( $help ) {
     print "\n Options:
      -help   -> This!
@@ -59,31 +65,15 @@ Single option:
      -hosts  -> Show suggested /etc/hosts file
      -mail   -> Print http\n\n";
 
-} elsif ( ( $jsons ) && ( $localcheck ) ) {
-    $REMOTEDNSHOST = "localhost";
-    &supressERR( \&json_from_web_requests );
 } elsif ( $jsons ) {
-    $REMOTEDNSHOST = "8.8.8.8";
     &supressERR( \&json_from_web_requests );
 } elsif ( $mail ) {
     print "\n\n";
     &get_mail_accounts();
-} elsif ( ( $ipdns ) && ( $localcheck ) ) {
-    $REMOTEDNSHOST = "localhost";
-    print "\n\n";
-    &supressERR( \&get_human_webrequest );
 } elsif ( $ipdns ) {
-    $REMOTEDNSHOST = "8.8.8.8";
     print "\n\n";
     &supressERR( \&get_human_webrequest );
-} elsif ( ( $all ) && ( $localcheck ) ) {
-    $REMOTEDNSHOST = "localhost";
-    print "\n\n";
-    &supressERR( \&get_human_webrequest );
-    &gen_hosts_file();
-    &get_mail_accounts();
 } elsif ( $all ) {
-    $REMOTEDNSHOST = "8.8.8.8";
     print "\n\n";
     &supressERR( \&get_human_webrequest );
     &gen_hosts_file();
@@ -330,3 +320,4 @@ sub jsons {
     bless $self, $class;
     return $self;
 }
+1;
