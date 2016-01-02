@@ -23,9 +23,9 @@ my $hosts      = 0;
 my $help       = 0;
 my $jsons      = 0;
 my $localcheck = 0;
-our $fileName = "/etc/userdatadomains";
-our @links    = read_file( $fileName );
-our $linkRef  = \@links;
+our $file_name = "/etc/userdatadomains";
+our @links    = read_file( $file_name );
+our $link_ref  = \@links;
 our $VERSION  = 0.02;
 our $REMOTEDNSHOST;
 
@@ -171,20 +171,18 @@ sub get_dns_data {
     my $REMOTEDNSH = $REMOTEDNSHOST;
     my $domain     = "@_";
     my $cmd        = "dig";
-    my @localArgs  = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
-    my @googleArgs = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
+    my @local_args  = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
+    my @google_args = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
 
     #so, this uses the lib found to capture stdout of the called system command
     #first we populate it into an array
-    my @googleDNSA = capture( $cmd, @googleArgs );
+    my @googleDNSA = capture( $cmd, @google_args );
 
     #then we reference out the first element because we want a singular return
     #then we do the same for localhost requests
-    my $googleDNSR    = \@googleDNSA;
-    my $googleDNS     = $googleDNSR->[0];
-    my @localhostDNSA = capture( $cmd, @localArgs );
-    my $localhostDNSR = \@localhostDNSA;
-    my $localhostDNS  = $localhostDNSR->[0];
+    my $googleDNS     = $googleDNSA[0];
+    my @localhostDNSA = capture( $cmd, @local_args );
+    my $localhostDNS  = $localhostDNSA[0];
     chomp( $googleDNS, $localhostDNS );
 
     #if the request is defined but doesn't match:
@@ -259,13 +257,13 @@ sub get_mail_accounts {
 
 sub gen_hosts_file {
     print "\n\n\t::Hosts File::\n\n";
-    foreach my $hostDomain ( @{$linkRef} ) {
-        if ( $hostDomain =~ /==/ ) {
-            $hostDomain =~ s/:[\s]/==/g;
-            my ( $newDomain, $userName, $userGroup, $domainStatus, $primaryDomain, $homeDir, $IPport ) = split /==/,
-                $hostDomain, 9;
-            my ( $IP ) = split /:/, $IPport, 2;
-            print "$IP\t\t$newDomain\twww.$newDomain\n";
+    foreach my $host_domain ( @{$link_ref} ) {
+        if ( $host_domain =~ /==/ ) {
+            $host_domain =~ s/:[\s]/==/g;
+            my ( $new_domain, $user_name, $user_group, $domain_status, $primary_domain, $home_dir, $IP_port ) = split /==/,
+                $host_domain, 9;
+            my ( $IP ) = split /:/, $IP_port, 2;
+            print "$IP\t\t$new_domain\twww.$new_domain\n";
         } else {
             next;
         }
@@ -279,7 +277,7 @@ sub json_from_web_requests {
     $SIG{'INT'} = sub { print "\nCaught CTRL+C!.."; print RESET " Ending..\n"; kill HUP => -$$; };
     my $head4;
     my $REMOTEDNSH = $REMOTEDNSHOST;
-    foreach my $jDomain ( @{$linkRef} ) {
+    foreach my $jDomain ( @{$link_ref} ) {
         if ( $jDomain =~ /(.*):[\s]/ ) {
             my $url2          = $1;
             my $ua            = LWP::UserAgent->new( agent => 'Mozilla/5.0', timeout => '1' );
@@ -300,14 +298,12 @@ sub json_from_web_requests {
             }
             my ( $domain, $status ) = ( $url2, $code2 );
             my $cmd2           = "dig";
-            my @localArgs2     = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
-            my @googleArgs2    = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
-            my @googleDNSA2    = capture( $cmd2, @googleArgs2 );
-            my $googleDNSR2    = \@googleDNSA2;
-            my $googleDNS2     = $googleDNSR2->[0];
-            my @localhostDNSA2 = capture( $cmd2, @localArgs2 );
-            my $localhostDNSR2 = \@localhostDNSA2;
-            $localhostDNS2 = $localhostDNSR2->[0];
+            my @local_args2     = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
+            my @google_args2    = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
+            my @googleDNSA2    = capture( $cmd2, @google_args2 );
+            my $googleDNS2     = $googleDNSA2[0];
+            my @localhostDNSA2 = capture( $cmd2, @local_args2 );
+            $localhostDNS2 = $localhostDNSA2[0];
             chomp( $googleDNS2, $localhostDNS2 );
 
             sub TO_JSON { return { %{ shift() } }; }
@@ -334,4 +330,3 @@ sub jsons {
     bless $self, $class;
     return $self;
 }
-1;
