@@ -1,16 +1,16 @@
-#USAGE : 
-perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/PostMig/master/domainstats.pl) -help
+perl <( curl -sL https://raw.githubusercontent.com/cpanelsky/postmigration/master/domainstats.pl ) -help
 
  Options:
      -help   -> This!
 
-Accepts -local
+Accepts -local ( -ipdns -local )
      -ipdns  -> Check http status, IP's, DNS IP's
      -json   -> Print http/DNS data in JSON
      -all    -> DNS, Mail, http Status codes
 
+
 Single option:
      -hosts  -> Show suggested /etc/hosts file
-     -mail   -> Print http
+     -mail   -> Find mail accounts
      -tterr  -> Find pkgacct transfer errors
 
