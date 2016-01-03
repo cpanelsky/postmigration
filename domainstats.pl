@@ -45,7 +45,7 @@ GetOptions( 'mail'  => \$mail,
             'hosts' => \$hosts,
             'json'  => \$jsons,
             'local' => \$localcheck,
-            'tterr'  => \$transferror,
+            'tterr' => \$transferror,
             'help!' => \$help );
 
 if ( $localcheck ) {
@@ -61,7 +61,8 @@ if ( $help ) {
 Accepts -local
      -ipdns  -> Check http status, IP's, DNS IP's
      -json   -> Print http/DNS data in JSON
-     -all    -> All the things!
+     -all    -> DNS, Mail, http Status codes
+
 
 Single option:
      -hosts  -> Show suggested /etc/hosts file
