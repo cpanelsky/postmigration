@@ -16,17 +16,18 @@ use File::Slurp qw(read_file);
 use Getopt::Long;
 
 # setup my defaults
-my $mail       = 0;
-my $ipdns      = 0;
-my $all        = 0;
-my $hosts      = 0;
-my $help       = 0;
-my $jsons      = 0;
-my $localcheck = 0;
+my $mail        = 0;
+my $ipdns       = 0;
+my $all         = 0;
+my $hosts       = 0;
+my $help        = 0;
+my $jsons       = 0;
+my $localcheck  = 0;
+my $transferror = 0;
 our $file_name = "/etc/userdatadomains";
-our @links    = read_file( $file_name );
+our @links     = read_file( $file_name );
 our $link_ref  = \@links;
-our $VERSION  = 0.02;
+our $VERSION   = 0.02;
 our $REMOTEDNSHOST;
 
 #this silences stderr
@@ -44,12 +45,13 @@ GetOptions( 'mail'  => \$mail,
             'hosts' => \$hosts,
             'json'  => \$jsons,
             'local' => \$localcheck,
+            'tterr'  => \$transferror,
             'help!' => \$help );
 
-if ($localcheck) {
- $REMOTEDNSHOST = "localhost";
+if ( $localcheck ) {
+    $REMOTEDNSHOST = "localhost";
 } else {
- $REMOTEDNSHOST = "8.8.8.8";
+    $REMOTEDNSHOST = "8.8.8.8";
 }
 
 if ( $help ) {
@@ -63,7 +65,11 @@ Accepts -local
 
 Single option:
      -hosts  -> Show suggested /etc/hosts file
-     -mail   -> Print http\n\n";
+     -mail   -> Print http
+     -tterr  -> Find pkgacct transfer errors\n\n";
+} elsif ( $transferror ) {
+
+    &transfer_errors();
 
 } elsif ( $jsons ) {
     &supressERR( \&json_from_web_requests );
@@ -158,9 +164,9 @@ sub get_dns_data {
     use Term::ANSIColor qw(:constants);
 
     #here we can get the domain as a parameter and make some dig arguments
-    my $REMOTEDNSH = $REMOTEDNSHOST;
-    my $domain     = "@_";
-    my $cmd        = "dig";
+    my $REMOTEDNSH  = $REMOTEDNSHOST;
+    my $domain      = "@_";
+    my $cmd         = "dig";
     my @local_args  = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
     my @google_args = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
 
@@ -250,7 +256,8 @@ sub gen_hosts_file {
     foreach my $host_domain ( @{$link_ref} ) {
         if ( $host_domain =~ /==/ ) {
             $host_domain =~ s/:[\s]/==/g;
-            my ( $new_domain, $user_name, $user_group, $domain_status, $primary_domain, $home_dir, $IP_port ) = split /==/,
+            my ( $new_domain, $user_name, $user_group, $domain_status, $primary_domain, $home_dir, $IP_port ) =
+                split /==/,
                 $host_domain, 9;
             my ( $IP ) = split /:/, $IP_port, 2;
             print "$IP\t\t$new_domain\twww.$new_domain\n";
@@ -288,8 +295,8 @@ sub json_from_web_requests {
             }
             my ( $domain, $status ) = ( $url2, $code2 );
             my $cmd2           = "dig";
-            my @local_args2     = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
-            my @google_args2    = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
+            my @local_args2    = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
+            my @google_args2   = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
             my @googleDNSA2    = capture( $cmd2, @google_args2 );
             my $googleDNS2     = $googleDNSA2[0];
             my @localhostDNSA2 = capture( $cmd2, @local_args2 );
@@ -320,4 +327,48 @@ sub jsons {
     bless $self, $class;
     return $self;
 }
+
+sub transfer_errors {
+    use Path::Class;
+
+    my $transfer_logdir = "/var/cpanel/transfer_sessions";
+    my @files;
+
+    dir( "$transfer_logdir" )->recurse(
+        callback => sub {
+            my $file = shift;
+            if ( $file =~ /master.log/ ) {
+                push @files, $file->absolute->stringify;
+            }
+        } );
+
+    foreach my $filename ( @files ) {
+        &find_pkgacct_errors( "$filename" );
+    }
+}
+
+sub find_pkgacct_errors {
+
+    my $log_file = $_[0];
+
+    #    my @timestamp = stat($log_fiile);
+    my $last_mod_time = ( stat( $log_file ) )[9];
+    my $humantime     = localtime( $last_mod_time );
+    print "\n$log_file \n\t ->  dated  -> $humantime -> errors: \n\n";
+    open( INPUTFILE, "<$log_file" ) or die "$!";
+    my $previous_line;
+    print "Extracting errors\n";
+    while ( <INPUTFILE> ) {
+
+        if ( $_ =~ m/ was not successful, or the requested account, (.*) was not found on the server: (.*)”\.","/ )
+        {
+            my $account = $1;
+            my $server  = $2;
+            $account =~ s/\W//g;
+            $server =~ s/\“|\"//g;
+            printf( "Account: %-17s encountered pkgacct/cpmove errors from $server\n", $account );
+        }
+    }
+}
+
 1;
