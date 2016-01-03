@@ -12,4 +12,5 @@ Accepts -local
 Single option:
      -hosts  -> Show suggested /etc/hosts file
      -mail   -> Print http
+     -tterr  -> Find pkgacct transfer errors
 
