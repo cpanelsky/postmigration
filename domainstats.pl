@@ -58,7 +58,7 @@ if ( $help ) {
     print "\n Options:
      -help   -> This!
 
-Accepts -local
+Accepts -local ( -ipdns -local )
      -ipdns  -> Check http status, IP's, DNS IP's
      -json   -> Print http/DNS data in JSON
      -all    -> DNS, Mail, http Status codes
