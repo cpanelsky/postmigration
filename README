@@ -7,7 +7,7 @@ perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/PostMig/master/domai
 Accepts -local
      -ipdns  -> Check http status, IP's, DNS IP's
      -json   -> Print http/DNS data in JSON
-     -all    -> All the things!
+     -all    -> DNS, Mail, http Status codes
 
 Single option:
      -hosts  -> Show suggested /etc/hosts file
