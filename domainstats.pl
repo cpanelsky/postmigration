@@ -55,41 +55,23 @@ if ( $localcheck ) {
 }
 
 if ( $help ) {
-    print "\n Options:
-     -help   -> This!
-
-Accepts -local ( -ipdns -local )
-     -ipdns  -> Check http status, IP's, DNS IP's
-     -json   -> Print http/DNS data in JSON
-     -all    -> DNS, Mail, http Status codes
-
-
-Single option:
-     -hosts  -> Show suggested /etc/hosts file
-     -mail   -> Find mail accounts
-     -tterr  -> Find pkgacct transfer errors\n\n";
+    &helpsub();
 } elsif ( $transferror ) {
-
     &transfer_errors();
-
 } elsif ( $jsons ) {
     &supressERR( \&json_from_web_requests );
 } elsif ( $mail ) {
-    print "\n\n";
     &get_mail_accounts();
 } elsif ( $ipdns ) {
-    print "\n\n";
     &supressERR( \&get_human_webrequest );
 } elsif ( $all ) {
-    print "\n\n";
     &supressERR( \&get_human_webrequest );
     &gen_hosts_file();
     &get_mail_accounts();
 } elsif ( $hosts ) {
-    print "\n";
     &gen_hosts_file();
 } else {
-    print "\n\thWhhut?! try -help ;p\n\n";
+    &helpsub();
 }
 
 #this calls the subs with params in threads
@@ -180,6 +162,9 @@ sub get_dns_data {
     my $googleDNS     = $googleDNSA[0];
     my @localhostDNSA = capture( $cmd, @local_args );
     my $localhostDNS  = $localhostDNSA[0];
+    if ( not defined $googleDNS ) {
+        $googleDNS = "NULL_IP";
+    }
     chomp( $googleDNS, $localhostDNS );
 
     #if the request is defined but doesn't match:
@@ -189,7 +174,7 @@ sub get_dns_data {
         my $RlocalIP  = ( BOLD RED $localhostDNS );
         my $RgoogleIP = ( BOLD RED $googleDNS );
         chomp( $RlocalIP, $RgoogleIP );
-        print "$IPM1" . "$RlocalIP" . "$IPM2" . "$RgoogleIP\n";
+        print "$IPM1" . "$RlocalIP" . "$IPM2" . "$RgoogleIP for $domain\n";
     } else {
 
         #if it's defined and matches, we do a normal thing:
@@ -271,7 +256,7 @@ sub gen_hosts_file {
 
 sub json_from_web_requests {
     require LWP::UserAgent;
-    print "\n";
+    print "\n\n";
     $SIG{'INT'} = sub { print "\nCaught CTRL+C!.."; print RESET " Ending..\n"; kill HUP => -$$; };
     my $head4;
     my $REMOTEDNSH = $REMOTEDNSHOST;
@@ -331,7 +316,7 @@ sub jsons {
 
 sub transfer_errors {
     use Path::Class;
-
+    print "\n";
     my $transfer_logdir = "/var/cpanel/transfer_sessions";
     my @files;
 
@@ -370,4 +355,19 @@ sub find_pkgacct_errors {
     }
 }
 
+sub helpsub {
+    print "\n Options:
+     -help   -> This!
+
+Accepts -local ( -ipdns -local )
+     -ipdns  -> Check http status, IP's, DNS IP's
+     -json   -> Print http/DNS data in JSON
+     -all    -> DNS, Mail, http Status codes
+
+
+Single option:
+     -hosts  -> Show suggested /etc/hosts file
+     -mail   -> Find mail accounts
+     -tterr  -> Find pkgacct transfer errors\n\n";
+}
 1;
