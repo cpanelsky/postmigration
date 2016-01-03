@@ -66,7 +66,7 @@ Accepts -local ( -ipdns -local )
 
 Single option:
      -hosts  -> Show suggested /etc/hosts file
-     -mail   -> Print http
+     -mail   -> Find mail accounts
      -tterr  -> Find pkgacct transfer errors\n\n";
 } elsif ( $transferror ) {
 
@@ -357,8 +357,6 @@ sub find_pkgacct_errors {
     my $humantime     = localtime( $last_mod_time );
     print "\n$log_file \n\t ->  dated  -> $humantime -> errors: \n\n";
     open( INPUTFILE, "<$log_file" ) or die "$!";
-    my $previous_line;
-    print "Extracting errors\n";
     while ( <INPUTFILE> ) {
 
         if ( $_ =~ m/ was not successful, or the requested account, (.*) was not found on the server: (.*)”\.","/ )
