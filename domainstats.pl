@@ -334,25 +334,32 @@ sub transfer_errors {
 }
 
 sub find_pkgacct_errors {
-
-    my $log_file = $_[0];
-
-    #    my @timestamp = stat($log_fiile);
+    use Data::Dumper;
+    my %seen;
+    my @error_list;
+    my $log_file      = $_[0];
     my $last_mod_time = ( stat( $log_file ) )[9];
     my $humantime     = localtime( $last_mod_time );
     print "\n$log_file \n\t ->  dated  -> $humantime -> errors: \n\n";
     open( INPUTFILE, "<$log_file" ) or die "$!";
-    while ( <INPUTFILE> ) {
 
+    while ( <INPUTFILE> ) {
         if ( $_ =~ m/ was not successful, or the requested account, (.*) was not found on the server: (.*)”\.","/ )
         {
             my $account = $1;
             my $server  = $2;
             $account =~ s/\W//g;
             $server =~ s/\“|\"//g;
-            printf( "Account: %-17s encountered pkgacct/cpmove errors from $server\n", $account );
+            push @error_list, "$account $server";
         }
     }
+    my @unique_error = grep { !$seen{$_}++ } @error_list,;
+    foreach ( @unique_error ) {
+        if ( $_ =~ /(.*)[\s+](.*)/ ) {
+            printf( "Account: %-16s encountered pkgacct/cpmove errors from $2\n", $1 );
+        }
+    }
+    print "\n";
 }
 
 sub helpsub {
