@@ -3,7 +3,7 @@
 #                                                           All rights Reserved.
 # copyright@cpanel.net                                         http://cpanel.net
 # This code is subject to the cPanel license. Unauthorized copying is prohibited
-package DomainStatus;
+package PostMigration;
 use File::Spec;
 use strict;
 use warnings;
