@@ -32,15 +32,6 @@ our $link_ref  = \@links;
 our $VERSION   = 0.2;
 our $REMOTEDNSHOST;
 
-#this silences stderr
-sub supressERR($) {
-    open my $saveout, ">&STDERR";
-    open STDERR, '>', File::Spec->devnull();
-    my $func = $_[0];
-    $func->();
-    open STDERR, ">&", $saveout;
-}
-
 GetOptions( 'mail'  => \$mail,
             'ipdns' => \$ipdns,
             'all'   => \$all,
