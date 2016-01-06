@@ -117,7 +117,6 @@ sub http_web_request {
 
 sub dns_web_request {
     $SIG{'INT'} = sub { print "\nCaught CTRL+C!.."; print RESET " Ending..\n"; kill HUP => -$$; };
-    my $dns_toggle = "8.8.8.8";
     my $url        = $_[0];
     if ( $url ) {
         my $domain        = $url;
