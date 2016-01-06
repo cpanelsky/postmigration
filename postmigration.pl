@@ -91,7 +91,6 @@ Single option:
      -mail   -> Find mail accounts
      -tterr  -> Find pkgacct transfer errors\n\n";
 }
-1;
 
 sub http_web_request {
     require LWP::UserAgent;
@@ -295,4 +294,4 @@ sub gen_hosts_file {
     }
     print "\n";
 }
-
+1;
