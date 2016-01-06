@@ -30,7 +30,7 @@ our $file_name = "/etc/userdatadomains";
 our @links     = read_file( $file_name );
 our $link_ref  = \@links;
 our $VERSION   = 0.2;
-our $REMOTEDNSHOST;
+our $dns_toggle;
 
 GetOptions( 'mail'  => \$mail,
             'ipdns' => \$ipdns,
@@ -42,9 +42,9 @@ GetOptions( 'mail'  => \$mail,
             'help!' => \$help );
 
 if ( $localcheck ) {
-    $REMOTEDNSHOST = "localhost";
+    $dns_toggle = "localhost";
 } else {
-    $REMOTEDNSHOST = "8.8.8.8";
+    $dns_toggle = "8.8.8.8";
 }
 if ( $help ) {
     &helpsub();
@@ -117,31 +117,31 @@ sub http_web_request {
 
 sub dns_web_request {
     $SIG{'INT'} = sub { print "\nCaught CTRL+C!.."; print RESET " Ending..\n"; kill HUP => -$$; };
-    my $REMOTEDNSH = "8.8.8.8";
+    my $dns_toggle = "8.8.8.8";
     my $url        = $_[0];
     if ( $url ) {
-        my $domain       = $url;
-        my $googleDNS    = "NULL";
-        my $localhostDNS = "NULL";
-        my $cmd          = "dig";
-        my @local_args   = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
-        my @google_args  = ( "\@$REMOTEDNSH", "$domain", "A", "+short", "+tries=1" );
-        my @googleDNSA   = capture( $cmd, @google_args );
-        $googleDNS = $googleDNSA[0];
-        my @localhostDNSA = capture( $cmd, @local_args );
-        $localhostDNS = $localhostDNSA[0];
+        my $domain        = $url;
+        my $google_dns    = "NULL";
+        my $localhost_dns = "NULL";
+        my $cmd           = "dig";
+        my @local_args    = ( "\@localhost", "$domain", "A", "+short", "+tries=1" );
+        my @google_args   = ( "\@$dns_toggle", "$domain", "A", "+short", "+tries=1" );
+        my @google_dnsa    = capture( $cmd, @google_args );
+           $google_dns = $google_dnsa[0];
+        my @localhost_dnsa = capture( $cmd, @local_args );
+        $localhost_dns = $localhost_dnsa[0];
 
-        if ( not defined $googleDNS ) {
-            $googleDNS = "NULL";
+        if ( not defined $google_dns ) {
+            $google_dns = "NULL";
         }
-        if ( not defined $localhostDNS ) {
-            $localhostDNS = "NULL";
+        if ( not defined $localhost_dns ) {
+            $localhost_dns = "NULL";
         }
-        chomp( $domain, $googleDNS, $localhostDNS );
+        chomp( $domain, $google_dns, $localhost_dns );
 
         $domains{'Domain'}    = $domain;
-        $domains{'RemoteDNS'} = $googleDNS;
-        $domains{'LocalDNS'}  = $localhostDNS;
+        $domains{'RemoteDNS'} = $google_dns;
+        $domains{'LocalDNS'}  = $localhost_dns;
         if ( $humanrun eq "1" ) {
             foreach my $key ( keys %domains ) {
                 my $value = $domains{$key};
@@ -156,9 +156,10 @@ sub dns_web_request {
             }
         } elsif ( $humanrun eq "0" ) {
             my $jsondata = encode_json \%domains;
-            print "\n$jsondata";
+            print "$jsondata\n";
         }
     }
+
 }
 
 sub get_webrequest {
@@ -170,7 +171,8 @@ sub get_webrequest {
             sleep( .5 );
             &dns_web_request( "$resource" );
         }
-    } print "\n\n"; 
+    }
+	print "\n"; 
 }
 
 sub get_mail_accounts {
