@@ -9,8 +9,6 @@ use strict;
 use warnings;
 $Term::ANSIColor::AUTORESET = 1;
 use Term::ANSIColor qw(:constants);
-use threads;
-use threads::shared;
 use lib "/usr/local/cpanel/3rdparty/perl/514/lib64/perl5/cpanel_lib/";
 use JSON;
 use IPC::System::Simple qw(system capture $EXITVAL);
