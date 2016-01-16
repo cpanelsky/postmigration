@@ -250,8 +250,10 @@ sub get_mail_accounts {
        $pm1->start and next;
        if ( $host_domain =~ /==/ ) {
            $host_domain =~ s/:[\s]/==/g;
-           my ( $new_domain, $user_name, $user_group, $domain_status, $primary_domain, $home_dir, $IP_port ) = split /==/, $host_domain, 9;
-           my$request1 =  "cpanel?cpanel_jsonapi_user=$user_name&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=listpopswithdisk&domain=$new_domain";
+           my ( $new_domain, $user_name, $user_group, $domain_status, $primary_domain, $home_dir, $IP_port ) = split /==/, 
+            $host_domain, 9;
+           my$request1 =  
+            "cpanel?cpanel_jsonapi_user=$user_name&cpanel_jsonapi_apiversion=2&cpanel_jsonapi_module=Email&cpanel_jsonapi_func=listpopswithdisk&domain=$new_domain";
            my $url = "https://127.0.0.1:2087/json-api/$request1";
            my $response        = $ua->get($url, 'Authorization' => "$cauth");
            my $content         = $response->content; 
@@ -265,15 +267,15 @@ sub get_mail_accounts {
 	                  foreach my $href (@mailhashes) {
 	                      for my $role ( keys %$href ) {
 	                          if ( $role eq "email" ) {
-	                             $role = $href->{$role};
-	                             printf( "\t|Mail=%-40s ", $role );
-	                             }elsif ( $role eq "domain" ) {
-	                               my $maildomain = $href->{$role};
-	                               printf("|Domain=%-30s",$maildomain);
-	                               }elsif ( $role eq "humandiskused" ) {
-	                                  $role = $href->{$role};
-	                                  $role =~ s/\xa0//g;
-	                                  printf("|DiskUsed=%-4s\n",$role);
+	                          $role = $href->{$role};
+	                          printf( "\t|Mail=%-40s ", $role );
+	                          }elsif ( $role eq "domain" ) {
+	                          my $maildomain = $href->{$role};
+	                          printf("|Domain=%-30s",$maildomain);
+	                          }elsif ( $role eq "humandiskused" ) {
+	                          $role = $href->{$role};
+	                          $role =~ s/\xa0//g;
+	                          printf("|DiskUsed=%-4s\n",$role);
         	                  }}
                         }} 
                 }}
