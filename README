@@ -1,4 +1,4 @@
-perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/PostMig/master/postmigration.pl) -help
+perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/postmigration/master/postmigration.pl)
 
  Options:
      -help   -> This!
@@ -13,4 +13,3 @@ Single option:
      -hosts  -> Show suggested /etc/hosts file
      -mail   -> Find mail accounts
      -tterr  -> Find pkgacct transfer errors
-
