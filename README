@@ -1,4 +1,4 @@
-perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/postmigration/master/postmigration.pl)
+/usr/local/cpanel/3rdparty/bin/perl <(curl -sL https://raw.githubusercontent.com/cpanelsky/postmigration/master/postmigration.pl) -mail
 
  Options:
      -help   -> This!
