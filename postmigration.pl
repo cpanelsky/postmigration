@@ -278,7 +278,7 @@ sub get_mail_accounts {
     #for the users found, if we aren't root look for an etc dir
     foreach my $user ( keys %user_list ) {
         if ( $user ne "root" ) {
-            print "User=$user ->\n";
+            print "User=$user->\n";
             opendir( ETC, "$user_list{$user}/etc" ) || next;
             my $path = $user_list{$user};
 
@@ -309,7 +309,7 @@ sub get_mail_accounts {
                         printf( "   Email=%s\t", $PWLINED );
                         print " Disk=";
                         my $dsval = sprintf( "%06.5f", $totals );
-                        printf( "%-05s MB\n", $dsval );
+                        printf( "%-05sMB\n", $dsval );
 
                     }
                     close(PASSWD);
