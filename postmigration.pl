@@ -169,7 +169,7 @@ sub dns_web_request {
         }
         elsif ( $humanrun eq "0" ) {
             my $jsondata = encode_json \%domains;
-            print "$jsondata\n";
+            print "[$jsondata]\n";
         }
     }
 
