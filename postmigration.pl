@@ -97,7 +97,7 @@ Single option:
 sub http_web_request { # we use LWP to get the status code and PeerIP(connectedIP) here
     require LWP::UserAgent;
     $SIG{'INT'} = sub {
-        print "\nCaught CTRL+C!.."; #we set a lister for Ctrl+C
+        print "\nCaught CTRL+C!.."; #we set a listener for Ctrl+C
         print RESET " Ending..\n";
         kill HUP => -$$;
     };
