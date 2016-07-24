@@ -47,7 +47,7 @@ GetOptions(
 if ($localcheck) {  #used for dig
     $dns_toggle = "localhost";
 }
-else { # default, used if -local is not yet
+else { # default, used if -local is not set
     $dns_toggle = "8.8.8.8";
 }
 if ($help) {
