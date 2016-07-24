@@ -74,9 +74,7 @@ elsif ($all) {
 elsif ($hosts) {
     &gen_hosts_file();
 }
-else {
-    &helpsub();
-}
+
 
 sub helpsub {
     print "\n Options:
