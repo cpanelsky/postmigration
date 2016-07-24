@@ -130,7 +130,7 @@ sub http_web_request { # we use LWP to get the status code and PeerIP(connectedI
     }
 }
 
-sub dns_web_request {  #list for sigint
+sub dns_web_request {  #listen for sigint
     $SIG{'INT'} = sub {
         print "\nCaught CTRL+C!..";
         print RESET " Ending..\n";
@@ -165,7 +165,7 @@ sub dns_web_request {  #list for sigint
 
 }
 
-sub get_webrequest { # same sigint listerns
+sub get_webrequest { #listen for sigint
     $SIG{'INT'} = sub {
         print "\nCaught CTRL+C!..";
         print RESET " Ending..\n";
