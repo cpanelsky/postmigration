@@ -195,9 +195,10 @@ sub print_data {
                     printf( "\n %s: %-20s", #string format for column-ish output
                         $iteminitem, $checkedDomains{$item}{$iteminitem} );
                 }
-                else { #otherwise, just a tab
-                    printf "$iteminitem=$checkedDomains{$item}{$iteminitem}\t";
-                }
+                 else { #otherwise
+                 printf( " %s: %-20s",
+                        $iteminitem, $checkedDomains{$item}{$iteminitem} );
+                 }
             }
             print "\n";
         }
