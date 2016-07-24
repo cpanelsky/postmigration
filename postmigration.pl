@@ -117,7 +117,7 @@ sub http_web_request { # we use LWP to get the status code and PeerIP(connectedI
             $reqIP = "$1";
         }
         else {
-            $reqIP = "NoConnect\t"; # set the request if it doesnt exist
+            $reqIP = "NoConnect"; # set the request if it doesnt exist
             chomp($reqIP);
         }
         if ( not defined $code ) {
