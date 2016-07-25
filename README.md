@@ -8,4 +8,4 @@ Run in the background, wait for results:
 
 Download as module, include and use functions from: 
  - wget -O PostMigration.pm  https://raw.githubusercontent.com/cpanelsky/postmigration/master/postmigration.pl
- /usr/local/cpanel/3rdparty/perl/522/bin/perl -I$(pwd) -e 'use PostMigration;$test = &PostMigration::http_web_request("www.google.com"); print $test;'
+ - /usr/local/cpanel/3rdparty/perl/522/bin/perl -I$(pwd) -e 'use PostMigration;$test = &PostMigration::http_web_request("www.google.com"); print $test;'
