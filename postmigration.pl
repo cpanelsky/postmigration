@@ -259,7 +259,7 @@ s/.*msg":\{"warnings":0,"dangerous_items":0,"contents":\{"warnings":\[\],"danger
     }                                       # print from our array
     my @unique_error = grep { !$seen{$_}++ } @error_list,;
     foreach my $uError (@unique_error) {
-        print "$uError\n\n";
+        print "\[$uError\]\n\n";
     }
 }
 
